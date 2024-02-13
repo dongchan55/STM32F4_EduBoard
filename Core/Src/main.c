@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -84,39 +85,29 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_USART3_UART_Init();
+
   /* USER CODE BEGIN 2 */
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);  /* Red off (Right LED) */
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);  /* Green off (Right LED) */
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);  /* Blue off (Right LED) */
 
-	 HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);  /* Red off (Right LED) */
-	 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);  /* Green off (Right LED) */
-	 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);  /* Blue off (Right LED) */
-
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);  /* Red off (Left LED) */
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);  /* Green off (Left LED) */
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);  /* Blue off (Left LED) */
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  uint8_t a = 'a';
+
   while (1)
   {
-#if 0 /* Test left LED on off with delay */
-	 HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);  /* Red on (Left LED)*/
-	 HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);  /* Green on (Left LED) */
-	 HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);  /* Blue on (Left LED) */
-
-	 HAL_Delay(1000);
-
-	 HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);  /* Red off (Left LED) */
-	 HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);  /* Green off (Left LED) */
-	 HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);  /* Blue off (Left LED) */
-	 HAL_Delay(1000);
-#elif 1 /* Test left LED on off with input switch */
-	 if (HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_3) == GPIO_PIN_SET)  /* SW pressed */
-	 {
-		 HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_RESET);  /* Red on */
-	 }
-	 else
-	 {
-		 HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);    /* Red off */
-	 }
-#endif
+    if (HAL_UART_Receive(&huart3, &a, 1, 10) == HAL_OK)
+    {
+      HAL_UART_Transmit(&huart3, &a, 1, 10);
+      HAL_Delay(100);
+    }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
