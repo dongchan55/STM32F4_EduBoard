@@ -23,7 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,7 +49,11 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+int _write(int file, char* p, int len) /* printf redirection output */
+{
+  HAL_UART_Transmit(&huart3, p, len, 10);
+  return len;
+}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -99,15 +103,13 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  uint8_t a = 'a';
+  uint8_t a = 0;
+  float f = 1.234;
 
   while (1)
   {
-    if (HAL_UART_Receive(&huart3, &a, 1, 10) == HAL_OK)
-    {
-      HAL_UART_Transmit(&huart3, &a, 1, 10);
-      HAL_Delay(100);
-    }
+    printf("Hello %d %f\n", a++, f);
+    HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
