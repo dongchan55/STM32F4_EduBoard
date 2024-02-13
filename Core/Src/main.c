@@ -43,11 +43,12 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint8_t rx3_data;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+static void MX_NVIC_Init(void);
 /* USER CODE BEGIN PFP */
 int _write(int file, char* p, int len) /* printf redirection output */
 {
@@ -91,6 +92,8 @@ int main(void)
   MX_GPIO_Init();
   MX_USART3_UART_Init();
 
+  /* Initialize interrupts */
+  MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);  /* Red off (Right LED) */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);  /* Green off (Right LED) */
@@ -99,6 +102,8 @@ int main(void)
   HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);  /* Red off (Left LED) */
   HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);  /* Green off (Left LED) */
   HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);  /* Blue off (Left LED) */
+
+  HAL_UART_Receive_IT(&huart3, &rx3_data, 1); /* Enable the specified UART interrupt (Must call that function once) */
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -108,8 +113,6 @@ int main(void)
 
   while (1)
   {
-    printf("Hello %d %f\n", a++, f);
-    HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -162,8 +165,26 @@ void SystemClock_Config(void)
   }
 }
 
-/* USER CODE BEGIN 4 */
+/**
+  * @brief NVIC Configuration.
+  * @retval None
+  */
+static void MX_NVIC_Init(void)
+{
+  /* USART3_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(USART3_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(USART3_IRQn);
+}
 
+/* USER CODE BEGIN 4 */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  if (huart->Instance == USART3)
+  {
+    HAL_UART_Receive_IT(&huart3, &rx3_data, 1);
+    HAL_UART_Transmit(&huart3, &rx3_data, 1, 10);
+  }
+}
 /* USER CODE END 4 */
 
 /**
