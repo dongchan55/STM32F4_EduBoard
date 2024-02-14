@@ -23,6 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "CLCD.h"
 #include <stdio.h>
 /* USER CODE END Includes */
 
@@ -104,15 +105,26 @@ int main(void)
   HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);  /* Blue off (Left LED) */
 
   HAL_UART_Receive_IT(&huart3, &rx3_data, 1); /* Enable the specified UART interrupt (Must call that function once) */
+
+  CLCD_GPIO_Init();
+  CLCD_Init();       /* Init + Clear LCD */
+  CLCD_Clear();
+
+  CLCD_Puts(0, 0, "Hello");
+  CLCD_Puts(0, 1, "World");
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   uint8_t a = 0;
   float f = 1.234;
+  uint8_t str[20];
 
   while (1)
   {
+    sprintf(str, "%d", a++);
+    CLCD_Puts(0, 0, str);
+    HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
